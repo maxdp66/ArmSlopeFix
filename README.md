@@ -11,19 +11,16 @@ On ARM64, strict IEEE 754 32-bit float precision causes the slope pass-through c
 - Running server as ARM causes NPC/mob stuck behavior for all clients
 - Works fine under x86_64 (Rosetta 2)
 
-## How It Works
-
-The mod hooks `Collision.TileCollision` — the shared method used by both player and NPC collision pipelines. When a vertical collision is detected near a slope tile that shouldn't have blocked movement, it retries with a 1-pixel upward nudge (0.0625 tile units) to clear the float precision threshold.
-
 ## Installation
 
-### Quick Install (prebuilt)
+### Download
 
-1. Download `ArmSlopeFix.tmod` from [Releases](https://github.com/maxdp66/ArmSlopeFix/releases)
-2. Copy to your tModLoader Mods folder:
-   - **macOS (client):** `~/Library/Application Support/Steam/steamapps/common/tModLoader/tModLoader/Mods/`
-   - **Linux (server):** `~/.local/share/Terraria/tModLoader/Mods/`
-3. Enable in-game or add to `enabled.json` on server
+Grab `ArmSlopeFix.tmod` from [Releases](https://github.com/maxdp66/ArmSlopeFix/releases) and drop it in your Mods folder:
+
+- **macOS (client):** `~/Library/Application Support/Steam/steamapps/common/tModLoader/tModLoader/Mods/`
+- **Linux (server):** `~/.local/share/Terraria/tModLoader/Mods/`
+
+Both client and server should have the mod for the fix to apply to both player movement and NPC/mob behavior.
 
 ### Build from Source
 
@@ -37,23 +34,9 @@ dotnet build -p:tMLSteamPath=/path/to/tModLoader/
 
 The `.tmod` file will be placed in your tModLoader Mods folder automatically.
 
-### Server Setup
+## How It Works
 
-Copy the `.tmod` to the server's Mods directory:
-
-```bash
-cp ArmSlopeFix.tmod ~/tmodserver/.local/share/Terraria/tModLoader/Mods/
-```
-
-Then enable via server console:
-
-```
-modlist add ArmSlopeFix
-```
-
-**Both client and server should have the mod** for the fix to apply to both player movement and NPC/mob behavior.
-
-## Technical Details
+The mod hooks `Collision.TileCollision` — the shared method used by both player and NPC collision pipelines. When a vertical collision is detected near a slope tile that shouldn't have blocked movement, it retries with a 1-pixel upward nudge (0.0625 tile units) to clear the float precision threshold.
 
 The root cause is in `Collision.cs` lines 751 and 755:
 
