@@ -17,7 +17,7 @@ On ARM64, strict IEEE 754 32-bit float precision causes the slope pass-through c
 
 Grab `ArmSlopeFix.tmod` from [Releases](https://github.com/maxdp66/ArmSlopeFix/releases) and drop it in your Mods folder:
 
-- **macOS (client):** `~/Library/Application Support/Steam/steamapps/common/tModLoader/tModLoader/Mods/`
+- **macOS (client):** `~/Library/Application Support/Terraria/tModLoader/Mods/`
 - **Linux (server):** `~/.local/share/Terraria/tModLoader/Mods/`
 
 Both client and server should have the mod for the fix to apply to both player movement and NPC/mob behavior.
