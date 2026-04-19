@@ -1,0 +1,7 @@
+displayName = ARM Slope Fix
+author = maxdp66
+version = 1.0.0
+homepage = 
+description = Fixes inability to walk up slopes on ARM64 macOS and server-side NPC/mob stuck on slopes. Addresses float precision differences in Terraria's collision code.
+buildVersion = 2024.6
+languageVersion = latest

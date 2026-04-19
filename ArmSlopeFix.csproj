@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>ArmSlopeFix</AssemblyName>
+    <RootNamespace>ArmSlopeFix</RootNamespace>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <!-- Import tModLoader build targets -->
+  <Import Project="$(tMLSteamPath)tMLMod.targets" Condition="Exists('$(tMLSteamPath)tMLMod.targets')" />
+
+</Project>
