@@ -21,10 +21,6 @@ namespace ArmSlopeFix
     /// </summary>
     public class ArmSlopeFix : Mod
     {
-        // Re-entrancy guard to prevent infinite recursion when we retry with nudge
-        [ThreadStatic]
-        private static bool _inRetry;
-
         public override void Load()
         {
             On_Collision.TileCollision += Hook_TileCollision;
@@ -33,7 +29,6 @@ namespace ArmSlopeFix
         public override void Unload()
         {
             On_Collision.TileCollision -= Hook_TileCollision;
-            _inRetry = false;
         }
 
         private static Vector2 Hook_TileCollision(
@@ -48,40 +43,19 @@ namespace ArmSlopeFix
         {
             Vector2 result = orig(Position, Velocity, Width, Height, fallThrough, fall2, gravDir);
 
-            // Only intervene when:
-            // 1. We're not already in a retry (prevent recursion)
-            // 2. A vertical collision happened (result.Y != Velocity.Y, meaning blocked)
-            // 3. The entity had downward velocity (was falling onto something)
-            if (_inRetry)
+            // Only intervene when a vertical collision was detected
+            // (TileCollision modified the Y velocity)
+            if (Math.Abs(result.Y - Velocity.Y) < 0.001f)
                 return result;
 
-            bool verticalBlocked = Math.Abs(result.Y - Velocity.Y) > 0.001f && result.Y <= 0f;
-            if (!verticalBlocked)
-                return result;
-
-            // Check if any slope tile is in the entity's collision area
-            if (!IsNearSlope(Position, Velocity, Width, Height))
-                return result;
-
-            // Retry with a tiny upward nudge — this shifts the float comparison
-            // in TileCollision's slope check past the threshold that ARM64 fails.
-            // 0.0625f = 1 pixel = 1/16th tile. Imperceptible but enough to clear
-            // the ~0.0000001 ULP difference.
-            const float EPSILON = 0.0625f;
-            Vector2 nudgedPos = new Vector2(Position.X, Position.Y - EPSILON);
-
-            _inRetry = true;
-            try
-            {
-                Vector2 retry = orig(nudgedPos, Velocity, Width, Height, fallThrough, fall2, gravDir);
-                // If the nudge resolved the collision (no longer fully blocked), use it
-                if (retry.Y > result.Y + 0.001f)
-                    return retry;
-            }
-            finally
-            {
-                _inRetry = false;
-            }
+            // Check if any slope tile is in the entity's collision area.
+            // If so, the vertical collision may be a false positive caused by
+            // the float precision bug in the slope pass-through check.
+            // Undo it by returning the original velocity — this lets the
+            // entity continue without a position correction that would
+            // trigger the falling animation.
+            if (IsNearSlope(Position, Velocity, Width, Height))
+                return Velocity;
 
             return result;
         }
