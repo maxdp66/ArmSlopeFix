@@ -1,3 +1,1 @@
-Fixes a platform-specific float precision bug in Terraria's collision code that causes players and NPCs to get stuck when walking up slopes on ARM64 architecture (macOS Apple Silicon). Also fixes server-side NPC/mob stuck behavior when running tModLoader as ARM64.
-
-The bug is caused by stricter IEEE 754 32-bit float precision on ARM64 vs extended intermediate precision on x86_64, causing slope-pass-through checks to fail in one direction.
+Fixes ARM64 float precision bug in Terraria's slope collision code. Replaces speed-dependent Math.Abs(Velocity.X) tolerance with a fixed 1-pixel constant in both TileCollision and SlopeCollision. Install on server for NPC/mob fix, on client for player fix.
